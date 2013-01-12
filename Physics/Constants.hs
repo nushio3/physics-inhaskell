@@ -1,4 +1,4 @@
-module JKL.Physics.Constants where
+module Physics.Constants where
 
 import UnitTyped
 import UnitTyped.SI

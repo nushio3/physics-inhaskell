@@ -1,4 +1,4 @@
-wih-classical-mechanics
-=======================
+In Haskell Manuscript of Physics
+================================
 
-Knowledge of classical mechanics, written in haskell.
+Knowledge of classical mechanics, encoded in haskell.
