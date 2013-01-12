@@ -20,3 +20,4 @@ library
                    , JKL.Mechanics.Newton
   -- other-modules:       
   build-depends:       base ==4.6.*
+                     , unittyped >= 0.2
