@@ -17,6 +17,7 @@ cabal-version:       >=1.8
 
 library
   exposed-modules:   Physics.Constants
+                     Physics.Dimension
                    , Physics.Mechanics.Newton
   -- other-modules:       
   build-depends:       base ==4.6.*
