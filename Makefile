@@ -4,8 +4,7 @@
 	cd ghc-7.6.1/
 	sudo apt-get install libgmp3c2 libgmp3-dev  libghc-zlib-dev
 	./configure
-	make
-	make install
+	sudo make install
 	cabal install cabal-install
 	cabal update
 	ghc --version
