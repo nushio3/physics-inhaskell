@@ -32,3 +32,5 @@ Test-Suite doctest
   Main-Is:              doctests.hs
   Build-Depends:        base
                       , doctest >= 0.9.3
+                      , directory >= 1.2
+                      , filepath >= 1.3
