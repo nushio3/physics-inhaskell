@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -F -pgmF embeddock #-}
+{-# OPTIONS_GHC -F -pgmF embeddock -optF $$ #-}
 
 module Physics.Constants where
 
@@ -6,7 +6,7 @@ import UnitTyped
 import UnitTyped.SI
 import UnitTyped.SI.Meta
 
-{- | Sun is heavy! $(embed)
+{- | mass of $$(nameOfStar) is $$(show solarMass)
 
 >>> 1+1
 2
@@ -14,3 +14,5 @@ import UnitTyped.SI.Meta
 
 solarMass :: Value MassDimension (U Gram) Double
 solarMass =  3e30 *| kilo gram `as` gram
+
+nameOfStar = "Sun"
