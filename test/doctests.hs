@@ -12,7 +12,9 @@ findHs dir = do
     filter (`notElem` ["..","."]) <$>
     getDirectoryContents dir
   subDirs <- filterM doesDirectoryExist fs
-  files1 <- filter ((`elem` [".hs", ".lhs"]) . takeExtension) <$>
+  files1 <-
+    filter ((/='.') . head . takeFileName) <$>
+    filter ((`elem` [".hs", ".lhs"]) . takeExtension) <$>
     filterM doesFileExist fs
   files2 <- concat <$> mapM findHs subDirs
   return $ files1 ++ files2
