@@ -21,6 +21,10 @@ findHs dir = do
 
 main :: IO ()
 main = do
-  files <- findHs "Physics"
+  filesP <- findHs "Physics"
+  filesT <- findHs "Text"
+
+  let files = filesP ++ filesT
+
   putStrLn $ "testing: " ++ unwords files
   doctest files

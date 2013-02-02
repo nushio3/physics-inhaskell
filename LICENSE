@@ -1,4 +1,7 @@
-Copyright (c) 2013, TakayukiMuranushi
+Physics in Haskell
+==================
+
+Copyright (c) 2013, Takayuki Muranushi
 
 All rights reserved.
 
@@ -28,3 +31,29 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+
+CSL 1.0 Style Repository
+========================
+
+.csl files included in their packages are shared from CSL 1.0 Style
+Repository under its Creative Commons Attribution-ShareAlike 3.0
+Unported license.
+
+github.com/citation-style-language/styles is the main repository for
+CSL 1.0 styles and is maintained by the Citation Style Language (CSL)
+project members. For more information, check out the project website
+and the repository wiki.  
+
+Licensing
+---------
+
+All the styles in this repository are released under the Creative
+Commons Attribution-ShareAlike 3.0 Unported license. For attribution,
+any software using CSL styles from this repository must include a
+clear mention of the CSL project and a link to the project's
+website. When distributing these styles, keep the listings of authors
+and contributors in the style metadata intact.
+
+

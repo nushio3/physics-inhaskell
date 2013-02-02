@@ -18,10 +18,14 @@ cabal-version:       >=1.8
 library
   exposed-modules:   Physics.Constants
                      Physics.Dimension
-                   , Physics.NewtonMechanics.Concepts
+                     Physics.NewtonMechanics.Concepts
+                     Text.CSL.Output.Haddock
+
   -- other-modules:       
   build-depends:       base >=4.5 && <5
+                     , citation-resolve
                      , dynamic-object >= 0.2.1
+                     , embeddock
                      , unittyped >= 0.2
 
 
