@@ -6,7 +6,7 @@ module Astrophysics.ProtoplanetaryDisk.Model
 mass,
 
 {- * References -}
-ida2007, idaLin2003
+{- $references -}
 
 ) where
 
@@ -27,17 +27,19 @@ mass :: Double
 mass = 42
 
 
+{- $references
 
-{- |
-$(citeUrl ida2007)
+- $(citeUrl ida2007)
+
+- $(citeUrl idaLin2003)
+
 -}
+
 
 ida2007 :: Either String Reference
 ida2007 = unsafePerformIO $ readID "isbn:978-4-13-060749-0"
 
-{- |
-$(citeUrl idaLin2003)
--}
-
 idaLin2003 :: Either String Reference
 idaLin2003 = unsafePerformIO $ readID "arxiv:astro-ph/0312144"
+
+
