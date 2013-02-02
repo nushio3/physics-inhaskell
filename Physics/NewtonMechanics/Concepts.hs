@@ -23,6 +23,7 @@ import qualified UnitTyped.SI.Derived as Dim
 
 
 
+
 -- | The concept of 'Mass' of an object.
 data Mass = Mass deriving Typeable
 
@@ -68,6 +69,8 @@ instance (Objective o, UseReal o, Fractional (UnderlyingReal o))
     return $ m |*| v `as` undefined -- invoke type-inference assisted conversion!
 
 -- | The concept of 'KineticEnergy' of an object.
+--  $(citet ida2007)
+
 data KineticEnergy = KineticEnergy deriving Typeable
 
 instance (Objective o, UseReal o, Fractional (UnderlyingReal o))
@@ -82,3 +85,5 @@ instance (Objective o, UseReal o, Fractional (UnderlyingReal o))
     m <- its Mass
     v <- its Speed
     return $ m |*| v |*| v `as` undefined -- invoke type-inference assisted conversion!
+
+
