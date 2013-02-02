@@ -66,3 +66,19 @@ instance (Objective o, UseReal o, Fractional (UnderlyingReal o))
     m <- its Mass
     v <- its Speed
     return $ m |*| v `as` undefined -- invoke type-inference assisted conversion!
+
+-- | The concept of 'KineticEnergy' of an object.
+data KineticEnergy = KineticEnergy deriving Typeable
+
+instance (Objective o, UseReal o, Fractional (UnderlyingReal o))
+         => Member o KineticEnergy where
+  type ValType o KineticEnergy =
+    Value
+    Dim.Energy
+    (U Dim.Joule)
+    (UnderlyingReal o)
+
+  memberLookup = acyclically $ do
+    m <- its Mass
+    v <- its Speed
+    return $ m |*| v |*| v `as` undefined -- invoke type-inference assisted conversion!
