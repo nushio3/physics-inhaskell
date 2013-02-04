@@ -4,7 +4,16 @@
 name:                physics
 version:             0.1.0.0
 synopsis:            knowledge of physics, encoded in Haskell.
--- description:         
+description:         
+  - Astrophysics.* -- astrophysical concepts in Haskell.
+  .
+  - Physics.* -- physical concepts in Haskell.
+  .
+  - Numeric.Physical.* -- mathematical tools with dimensional wrapper.
+  .
+  - Text.CSL.* -- typical ways of citing references for physics.
+  
+
 homepage:            https://github.com/nushio3/ihmo-physics
 license:             BSD3
 license-file:        LICENSE
@@ -18,17 +27,24 @@ cabal-version:       >=1.8
 library
   exposed-modules:   
                      Astrophysics.ProtoplanetaryDisk.Model
+
                      Physics.Constants
                      Physics.Dimension
                      Physics.NewtonMechanics.Concepts
+
+                     Numeric.Physical.VectorCalculus
+
                      Text.CSL.Output.Haddock
 
   -- other-modules:       
   build-depends:       base >=4.5 && <5
+
+                     , ad >= 3.4
                      , citeproc-hs >= 0.3.7
                      , citation-resolve >= 0.2
                      , dynamic-object >= 0.2.1
-                     , unittyped >= 0.2
+                     , typelevel-tensor >= 0.2
+                     , unittyped >= 0.3
 
 
 Test-Suite doctest
