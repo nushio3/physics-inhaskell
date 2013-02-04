@@ -45,7 +45,7 @@ library
                      , dynamic-object >= 0.2.1
                      , typelevel-tensor >= 0.2
                      , unittyped >= 0.3
-
+  ghc-options:    -O3 -Wall -fno-warn-type-defaults
 
 Test-Suite doctest
   Type:                 exitcode-stdio-1.0

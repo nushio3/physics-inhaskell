@@ -23,8 +23,9 @@ main :: IO ()
 main = do
   filesP <- findHs "Physics"
   filesT <- findHs "Text"
+  filesN <- findHs "Numeric"
 
-  let files = filesP ++ filesT
+  let files = filesN ++ filesP ++ filesT
 
   putStrLn $ "testing: " ++ unwords files
   doctest files
