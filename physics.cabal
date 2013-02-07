@@ -29,6 +29,7 @@ library
                      Astrophysics.ProtoplanetaryDisk.Model
 
                      Physics.Constants
+                     Physics.ContinuumMechanics.Equations
                      Physics.Dimension
                      Physics.NewtonMechanics.Concepts
 
