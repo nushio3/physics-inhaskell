@@ -10,6 +10,7 @@
 
 module Numeric.Physical.VectorCalculus (grad, laplacian) where
 
+import           Data.Foldable (toList)
 import           Data.Traversable (Traversable)
 import qualified Numeric.AD as AD
 import           Numeric.AD.Types (AD)
@@ -22,6 +23,7 @@ import           UnitTyped (Value(..), val, mkVal,
 -- >>> import UnitTyped
 -- >>> import UnitTyped.SI
 -- >>> import UnitTyped.SI.Derived
+-- >>> import UnitTyped.SI.Constants (g)
 -- >>> import Data.Tensor.TypeLevel (Vec3,vec3,Vec(..),(:~)(..))
 -- >>> let examplePotential :: (Fractional a) => Vec3 (a :| Meter) -> a :| Joule; examplePotential (Vec :~ x :~ y :~ z) = mkVal $ (val x) ^2 + (val y) ^2 + (val z) ^2
 -- >>> let examplePotential4 :: (Fractional a) => Vec3 (a :| Meter) -> a :| Joule; examplePotential4 (Vec :~ x :~ y :~ z) = mkVal $ (val x) ^4 + (val y) ^4 + (val z) ^4
@@ -52,6 +54,15 @@ grad fun = fmap mkVal . AD.grad fun' . fmap val
     fun' :: (forall s. AD.Mode s => f (AD s a) -> AD s a)
     fun' = val . fun . fmap mkVal
 
+
+-- | Take the laplacian of input function with dimensions.
+--
+-- >>> let x = (fmap mkVal $ vec3 1.01 2.22 3.03) :: Vec3 (Double :| Meter)
+-- >>> laplacian examplePotential x
+-- 6.0 J⋅m⁻²
+
+
+
 laplacian :: forall f a dimX uniX dimX2 uniX2 negDimX2 negUniX2 dimY uniY dimY' uniY'.
          (Traversable f, Num a,
            Convertible' dimX uniX,
@@ -65,11 +76,15 @@ laplacian :: forall f a dimX uniX dimX2 uniX2 negDimX2 negUniX2 dimY uniY dimY' 
            MapMerge uniY negUniX2 uniY'
           )
      => (forall s. AD.Mode s => f (Value dimX uniX (AD s a)) -> (Value dimY uniY (AD s a)) )
-         -> f (Value dimX uniX a) -> f (Value dimY' uniY' a)
-laplacian fun = fmap mkVal . AD.grad fun' . fmap val
+         -> f (Value dimX uniX a) -> (Value dimY' uniY' a)
+laplacian fun = mkVal . trace . AD.hessian fun' . fmap val
   where
     fun' :: (forall s. AD.Mode s => f (AD s a) -> AD s a)
     fun' = val . fun . fmap mkVal
 
+    trace :: f (f a) -> a
+    trace = traceList . toList . fmap toList
 
-
+    traceList :: [[a]] -> a
+    traceList xss@((x:_):_) = x + traceList (tail $ map tail xss)
+    traceList _             = 0
