@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                physics
-version:             0.1.0.0
+version:             0.0.0.0
 synopsis:            knowledge of physics, encoded in Haskell.
 description:         
   - Astrophysics.* -- astrophysical concepts in Haskell.
@@ -41,8 +41,9 @@ library
 
                      , ad >= 3.4
                      , citeproc-hs >= 0.3.7
-                     , citation-resolve >= 0.2
+                     , citation-resolve >= 0.2.3
                      , dynamic-object >= 0.2.1
+                     , embeddock >= 0.2
                      , typelevel-tensor >= 0.2
                      , unittyped >= 0.3
   ghc-options:    -O3 -Wall -fno-warn-type-defaults

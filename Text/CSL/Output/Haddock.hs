@@ -4,11 +4,17 @@ import Text.CSL (author, issued, Reference, title, url)
 import Text.CSL.Reference(year)
 import Text.Printf
 
+citep :: Either String Reference -> String
+citep eref =
+  case eref of
+    Left  _   -> "(??)"
+    Right ref -> printf "(%s %s)" (unwords $ map show $ author ref) (year $ head $ issued ref)
+
 citet :: Either String Reference -> String
 citet eref =
   case eref of
     Left  _   -> "(??)"
-    Right ref -> printf "(%s %s)" (unwords $ map show $ author ref) (year $ head $ issued ref)
+    Right ref -> printf "%s(%s)" (unwords $ map show $ author ref) (year $ head $ issued ref)
 
 
 citeUrl :: Either String Reference -> String
