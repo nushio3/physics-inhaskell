@@ -40,10 +40,10 @@ import           UnitTyped (Value(..), val, mkVal,
 grad :: forall f a dimX uniX negDimX negUniX dimY uniY dimY' uniY'.
          (Traversable f, Num a,
            Convertible' dimX uniX,
-           MapNeg  dimX negDimX,
-           MapNeg  uniX negUniX,
            Convertible' dimY uniY,
            Convertible' dimY' uniY',
+           MapNeg  dimX negDimX,
+           MapNeg  uniX negUniX,
            MapMerge dimY negDimX dimY',
            MapMerge uniY negUniX uniY'
           )
@@ -66,12 +66,12 @@ grad fun = fmap mkVal . AD.grad fun' . fmap val
 laplacian :: forall f a dimX uniX dimX2 uniX2 negDimX2 negUniX2 dimY uniY dimY' uniY'.
          (Traversable f, Num a,
            Convertible' dimX uniX,
+           Convertible' dimY uniY,
+           Convertible' dimY' uniY',
            MapMerge dimX dimX dimX2,
            MapMerge uniX uniX uniX2,
            MapNeg  dimX2 negDimX2,
            MapNeg  uniX2 negUniX2,
-           Convertible' dimY uniY,
-           Convertible' dimY' uniY',
            MapMerge dimY negDimX2 dimY',
            MapMerge uniY negUniX2 uniY'
           )
