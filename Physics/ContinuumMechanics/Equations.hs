@@ -74,10 +74,27 @@ hydrostatic ::
   , dimPre ~ Pressure
   , dimDen ~ Density
   , dimAcc ~ Acceleration
-  , uniLen ~ U Meter
-  , uniPre ~ U Pascal
-  , uniDen ~ '[ '(Meter, NThree),  '(Kilo Gram, POne) ]
-  , uniAcc ~ '[ '(Second, NTwo), '(Meter, POne)]
+
+  , Convertible' dimLen uniLen
+  , Convertible' dimPre uniPre
+  , Convertible' dimDen uniDen
+  , Convertible' dimAcc uniAcc
+  , Convertible' dimAcc uniAcc'
+
+  , MapNeg   dimLen dimNegLen
+  , MapMerge dimPre dimNegLen dimGpr
+  , MapNeg   dimDen dimNegDen
+  , MapMerge dimPre dimNegDen dimAcc
+
+  , MapNeg   uniLen uniNegLen
+  , MapMerge uniPre uniNegLen uniGpr
+  , MapNeg   uniDen uniNegDen
+  , MapMerge uniPre uniNegDen uniAcc'
+
+--   , uniLen ~ U Meter
+--   , uniPre ~ U Pascal
+--   , uniDen ~ '[ '(Meter, NThree),  '(Kilo Gram, POne) ]
+--   , uniAcc ~ '[ '(Second, NTwo), '(Meter, POne)]
   ) =>
  (forall s. AD.Mode s =>
  Vec3 (Value dimLen uniLen (AD s x)) -> Value dimPre uniPre (AD s x))
