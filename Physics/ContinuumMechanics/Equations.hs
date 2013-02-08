@@ -71,8 +71,7 @@ gravityPoisson ::
   -> (Vec3 (Value dimLen uniLen x) -> (Value dimZhz uniZhz x)) 
 
 gravityPoisson gravitationalPotential density r
-  = laplacian gravitationalPotential r 
-    |-|    (4 *| pi |*| density r |*| g)
+  = laplacian gravitationalPotential r |-| (4 *| pi |*| density r |*| g)
 
 -- gravityPoisson gravitationalPotential density r
 --  = laplacian gravitationalPotential r 
