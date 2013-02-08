@@ -39,16 +39,26 @@ import           UnitTyped.SI.Derived (Density, Pressure, GravitationalPotential
 
 
 gravityPoisson ::
-  (Fractional x, 
-   uniLen ~ U Meter,
-   uniPot ~ '[ '(Second, NTwo),  '(Meter, PTwo)],
-   uniDen ~ '[ '(Kilo Gram, POne), '(Meter, NThree) ],
-   uniZhz ~ '[ '(Second, NTwo)]) =>
+  (Fractional x 
+  , dimLen ~ LengthDimension
+  , uniLen ~ U Meter
+  , dimPot ~ '[ '(Time, NTwo), '(Length, PTwo)]
+  , uniPot ~ '[ '(Second, NTwo),  '(Meter, PTwo)]
+  , dimDen ~ Density
+  , uniDen ~ '[ '(Kilo Gram, POne), '(Meter, NThree) ]
+  , dimZhz ~ '[ '(Time, NTwo)] 
+  , uniZhz ~ '[ '(Second, NTwo)] 
+  
+--   , MapMerge uniLen uniLen  uniLen2
+--   , MapNeg uniLen2  uniLenNeg2
+--   , MapMerge uniLenNeg2 uniPot uniZhz
+  
+   ) =>
  (forall s. AD.Mode s => 
-  Vec3 (Value LengthDimension uniLen (AD s x)) 
-       -> Value  '[ '(Time, NTwo), '(Length, PTwo)] uniPot (AD s x))
-  -> (Vec3 (Value LengthDimension uniLen x) -> (Value Density uniDen x)) 
-  -> (Vec3 (Value LengthDimension uniLen x) -> (Value '[ '(Time, NTwo)] uniZhz x)) 
+  Vec3 (Value dimLen uniLen (AD s x)) 
+       -> Value dimPot uniPot (AD s x))
+  -> (Vec3 (Value dimLen uniLen x) -> (Value dimDen uniDen x)) 
+  -> (Vec3 (Value dimLen uniLen x) -> (Value dimZhz uniZhz x)) 
 
 gravityPoisson gravitationalPotential density r
   = laplacian gravitationalPotential r |-| 
