@@ -31,13 +31,6 @@ import           UnitTyped.SI.Meta(Kilo)
 import           UnitTyped.SI.Derived (Density, Pressure, GravitationalPotential, Pascal, Acceleration)
 
 
--- gravityPoisson :: (Fractional x) =>
---  (forall s. AD.Mode s => 
---  Vec3 ((AD s x):| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)] '[ '(Second, NTwo),  '(Meter, PTwo)] (AD s x))
---  -> (Vec3 (x :| Meter) -> (Value Density '[ '(Kilo Gram, POne), '(Meter, NThree) ] x)) 
---  -> (Vec3 (x :| Meter) -> (Value '[ '(Time, NTwo)] '[ '(Second, NTwo)] x)) 
-
-
 gravityPoisson ::
   (Fractional x 
   , dimLen ~ LengthDimension
@@ -73,9 +66,6 @@ gravityPoisson ::
 gravityPoisson gravitationalPotential density r
   = laplacian gravitationalPotential r |-| (4 *| pi |*| density r |*| g)
 
--- gravityPoisson gravitationalPotential density r
---  = laplacian gravitationalPotential r 
---
 
 
 hydrostatic :: forall x .(Fractional x) =>

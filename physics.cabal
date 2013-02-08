@@ -44,7 +44,7 @@ library
                      , citeproc-hs >= 0.3.7
                      , citation-resolve >= 0.2.3
                      , dynamic-object >= 0.2.1
-                     , embeddock >= 0.2
+                     , embeddock >= 0.3
                      , typelevel-tensor >= 0.2
                      , unittyped >= 0.3
   ghc-options:    -O3 -Wall -fno-warn-type-defaults
