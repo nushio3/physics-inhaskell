@@ -69,6 +69,10 @@ gravityPoisson gravitationalPotential density r
 
 
 hydrostatic ::
+  forall x
+  dimLen dimPre dimDen dimAcc dimGpr dimNegLen dimNegDen dimAcc'
+  uniLen uniPre uniDen uniAcc uniGpr uniNegLen uniNegDen uniAcc'
+  .
   ( Fractional x
   , dimLen ~ LengthDimension
   , dimPre ~ Pressure
@@ -77,19 +81,21 @@ hydrostatic ::
 
   , Convertible' dimLen uniLen
   , Convertible' dimPre uniPre
+  , Convertible' dimGpr uniGpr
   , Convertible' dimDen uniDen
   , Convertible' dimAcc uniAcc
   , Convertible' dimAcc uniAcc'
 
   , MapNeg   dimLen dimNegLen
   , MapMerge dimPre dimNegLen dimGpr
-  , MapNeg   dimDen dimNegDen
-  , MapMerge dimPre dimNegDen dimAcc
+--  , MapNeg   dimDen dimNegDen
+  , MapMerge dimGpr dimDen dimAcc'
+
 
   , MapNeg   uniLen uniNegLen
   , MapMerge uniPre uniNegLen uniGpr
-  , MapNeg   uniDen uniNegDen
-  , MapMerge uniPre uniNegDen uniAcc'
+--  , MapNeg   uniDen uniNegDen
+  , MapMerge uniGpr uniDen uniAcc'
 
 --   , uniLen ~ U Meter
 --   , uniPre ~ U Pascal
@@ -100,13 +106,13 @@ hydrostatic ::
  Vec3 (Value dimLen uniLen (AD s x)) -> Value dimPre uniPre (AD s x))
  -> (Vec3 (Value dimLen uniLen x) -> Value dimDen uniDen x)
  -> (Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimAcc uniAcc x))
- -> (Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimAcc uniAcc x))
+ -> (Vec3 (Value dimLen uniLen x) ->  Vec3 (Value dimAcc' uniAcc' x)) -- Vec3 (Value dimGpr uniGpr x))
 hydrostatic pressure density acceleration r
-  = compose $ \i ->
-      let ret = (to ret) $ (gradP r ! i) |/| (density r) |+| (acceleration r ! i)
-      in ret
+  = compose $ \i ->  (gradP r ! i) |*| (density r)
+
   where
-    gradP =  grad pressure
+    gradP :: Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimGpr uniGpr x)
+    gradP =  undefined -- grad pressure
 
 
 --     gradP ::
