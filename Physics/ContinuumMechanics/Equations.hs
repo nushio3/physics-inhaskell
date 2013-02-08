@@ -41,28 +41,48 @@ import           UnitTyped.SI.Derived (Density, Pressure, GravitationalPotential
 gravityPoisson ::
   (Fractional x 
   , dimLen ~ LengthDimension
-  , uniLen ~ U Meter
+--   , uniLen ~ U Meter
   , dimPot ~ '[ '(Time, NTwo), '(Length, PTwo)]
-  , uniPot ~ '[ '(Second, NTwo),  '(Meter, PTwo)]
-  , dimDen ~ Density
-  , uniDen ~ '[ '(Kilo Gram, POne), '(Meter, NThree) ]
+--   , uniPot ~ '[ '(Second, NTwo),  '(Meter, PTwo)]
+--   , dimDen ~ Density
+  , dimDen ~ dimZhz
+  , uniDen ~ uniZhz
+--   , uniDen ~ '[ '(Kilo Gram, POne), '(Meter, NThree) ]
   , dimZhz ~ '[ '(Time, NTwo)] 
-  , uniZhz ~ '[ '(Second, NTwo)] 
+--   , uniZhz ~ '[ '(Second, NTwo)] 
   
---   , MapMerge uniLen uniLen  uniLen2
---   , MapNeg uniLen2  uniLenNeg2
---   , MapMerge uniLenNeg2 uniPot uniZhz
-  
+  , MapMerge dimLen dimLen  dimLen2
+  , MapNeg dimLen2  dimLenNeg2
+  , MapMerge dimPot dimLenNeg2 dimZhz
+
+  , MapMerge uniLen uniLen  uniLen2
+  , MapNeg uniLen2  uniLenNeg2
+  , MapMerge  uniPot uniLenNeg2 uniZhz
+
+  , Convertible' dimLen uniLen
+  , Convertible' dimPot uniPot
+  , Convertible' dimZhz uniZhz
+
+--   , Convertible' dimLen2 uniLen2
+--   , Convertible' dimLenNeg2 uniLenNeg2
+
    ) =>
  (forall s. AD.Mode s => 
   Vec3 (Value dimLen uniLen (AD s x)) 
        -> Value dimPot uniPot (AD s x))
+
   -> (Vec3 (Value dimLen uniLen x) -> (Value dimDen uniDen x)) 
+
   -> (Vec3 (Value dimLen uniLen x) -> (Value dimZhz uniZhz x)) 
 
 gravityPoisson gravitationalPotential density r
-  = laplacian gravitationalPotential r |-| 
-    (4 *| pi |*| density r |*| g)
+  = laplacian gravitationalPotential r 
+    |-|    (4 *| pi |*| density r)
+
+-- gravityPoisson gravitationalPotential density r
+--  = laplacian gravitationalPotential r 
+--
+
 
 hydrostatic :: forall x .(Fractional x) =>
  (forall s. AD.Mode s => 
