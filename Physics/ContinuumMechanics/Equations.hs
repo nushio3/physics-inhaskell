@@ -55,9 +55,9 @@ gravityPoisson ::
   , MapMerge uniDen   '[ '(Second, NTwo), '(Meter, PThree), '((Kilo Gram), NOne) ] uniZhz'
 
    ) =>
+
  (forall s. AD.Mode s =>
-  Vec3 (Value dimLen uniLen (AD s x))
-       -> Value dimPot uniPot (AD s x))
+  Vec3 (Value dimLen uniLen (AD s x)) -> Value dimPot uniPot (AD s x))
 
   -> (Vec3 (Value dimLen uniLen x) -> (Value dimDen uniDen x))
 
@@ -70,7 +70,7 @@ gravityPoisson gravitationalPotential density r
 
 hydrostatic ::
   forall x
-  dimLen dimPre dimDen dimAcc dimGpr dimNegLen dimNegDen dimAcc'
+  dimLen dimPre dimDen dimAcc dimGpr dimNegLen dimNegDen
   uniLen uniPre uniDen uniAcc uniGpr uniNegLen uniNegDen uniAcc'
   .
   ( Fractional x
@@ -78,6 +78,8 @@ hydrostatic ::
   , dimPre ~ Pressure
   , dimDen ~ Density
   , dimAcc ~ Acceleration
+  , dimNegDen ~ '[ '(Length, PThree),  '(Mass, NOne) ]
+  , dimGpr ~  '[  '(Length, NTwo), '(Mass, POne) , '(Time, NTwo) ]
 
   , Convertible' dimLen uniLen
   , Convertible' dimPre uniPre
@@ -88,31 +90,32 @@ hydrostatic ::
 
   , MapNeg   dimLen dimNegLen
   , MapMerge dimPre dimNegLen dimGpr
---  , MapNeg   dimDen dimNegDen
-  , MapMerge dimGpr dimDen dimAcc'
+  , MapNeg   dimDen dimNegDen
+  , MapMerge dimGpr dimNegDen dimAcc
 
 
   , MapNeg   uniLen uniNegLen
   , MapMerge uniPre uniNegLen uniGpr
---  , MapNeg   uniDen uniNegDen
-  , MapMerge uniGpr uniDen uniAcc'
+  , MapNeg   uniDen uniNegDen
+  , MapMerge uniGpr uniNegDen uniAcc'
 
---   , uniLen ~ U Meter
---   , uniPre ~ U Pascal
---   , uniDen ~ '[ '(Meter, NThree),  '(Kilo Gram, POne) ]
---   , uniAcc ~ '[ '(Second, NTwo), '(Meter, POne)]
   ) =>
- (forall s. AD.Mode s =>
- Vec3 (Value dimLen uniLen (AD s x)) -> Value dimPre uniPre (AD s x))
- -> (Vec3 (Value dimLen uniLen x) -> Value dimDen uniDen x)
- -> (Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimAcc uniAcc x))
- -> (Vec3 (Value dimLen uniLen x) ->  Vec3 (Value dimAcc' uniAcc' x)) -- Vec3 (Value dimGpr uniGpr x))
-hydrostatic pressure density acceleration r
-  = compose $ \i ->  (gradP r ! i) |*| (density r)
+
+  (forall s. AD.Mode s =>
+  Vec3 (Value dimLen uniLen (AD s x)) -> Value dimPre uniPre (AD s x))
+
+  -> (Vec3 (Value dimLen uniLen x) -> Value dimDen uniDen x)
+
+  -> (Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimAcc uniAcc x))
+
+  -> (Vec3 (Value dimLen uniLen x) ->  Vec3 (Value dimAcc uniAcc x))
+
+hydrostatic pressure density externalAcc r
+  = compose $ \i -> (externalAcc r ! i) |+| (gradP r ! i) |/| (density r)
 
   where
     gradP :: Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimGpr uniGpr x)
-    gradP =  undefined -- grad pressure
+    gradP = grad pressure
 
 
 --     gradP ::
