@@ -31,11 +31,19 @@ import           UnitTyped.SI.Meta(Kilo)
 import           UnitTyped.SI.Derived (Density, Pressure, GravitationalPotential, Pascal, Acceleration)
 
 
+-- gravityPoisson :: (Fractional x) =>
+--  (forall s. AD.Mode s => 
+--  Vec3 ((AD s x):| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)] '[ '(Second, NTwo),  '(Meter, PTwo)] (AD s x))
+--  -> (Vec3 (x :| Meter) -> (Value Density '[ '(Kilo Gram, POne), '(Meter, NThree) ] x)) 
+--  -> (Vec3 (x :| Meter) -> (Value '[ '(Time, NTwo)] '[ '(Second, NTwo)] x)) 
+
+
 gravityPoisson :: (Fractional x) =>
  (forall s. AD.Mode s => 
- Vec3 ((AD s x):| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)] '[ '(Second, NTwo),  '(Meter, PTwo)] (AD s x))
- -> (Vec3 (x :| Meter) -> (Value Density '[ '(Kilo Gram, POne), '(Meter, NThree) ] x)) 
- -> (Vec3 (x :| Meter) -> (Value '[ '(Time, NTwo)] '[ '(Second, NTwo)] x)) 
+  Vec3 (Value LengthDimension (U Meter) (AD s x)) 
+       -> Value  '[ '(Time, NTwo), '(Length, PTwo)] '[ '(Second, NTwo),  '(Meter, PTwo)] (AD s x))
+  -> (Vec3 (Value LengthDimension (U Meter) x) -> (Value Density '[ '(Kilo Gram, POne), '(Meter, NThree) ] x)) 
+  -> (Vec3 (Value LengthDimension (U Meter) x) -> (Value '[ '(Time, NTwo)] '[ '(Second, NTwo)] x)) 
 
 gravityPoisson gravitationalPotential density r
   = laplacian gravitationalPotential r |-| 
