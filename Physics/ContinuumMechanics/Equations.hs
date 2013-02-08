@@ -23,7 +23,7 @@ import           Numeric.Physical.VectorCalculus (grad, laplacian)
 import           Prelude hiding (pi)
 import           UnitTyped.Type
                   (Value(..), U, val, mkVal,(|+|),(|-|), (|*|), (|/|), (*|), coerce,as,to, (:|),
-                   Convertible'(..), MapMerge, MapNeg, MapEq, POne, PTwo, NOne, NTwo, NThree)
+                   Convertible'(..), MapMerge, MapNeg, MapEq, POne, PTwo, PThree,NOne, NTwo, NThree)
 
 import           UnitTyped.SI (LengthDimension, Length, Mass, Time, Second, Meter, Gram)
 import           UnitTyped.SI.Constants (pi, g', g)
@@ -41,30 +41,25 @@ import           UnitTyped.SI.Derived (Density, Pressure, GravitationalPotential
 gravityPoisson ::
   (Fractional x 
   , dimLen ~ LengthDimension
---   , uniLen ~ U Meter
   , dimPot ~ '[ '(Time, NTwo), '(Length, PTwo)]
---   , uniPot ~ '[ '(Second, NTwo),  '(Meter, PTwo)]
---   , dimDen ~ Density
-  , dimDen ~ dimZhz
-  , uniDen ~ uniZhz
---   , uniDen ~ '[ '(Kilo Gram, POne), '(Meter, NThree) ]
+  , dimDen ~ Density
   , dimZhz ~ '[ '(Time, NTwo)] 
---   , uniZhz ~ '[ '(Second, NTwo)] 
   
   , MapMerge dimLen dimLen  dimLen2
   , MapNeg dimLen2  dimLenNeg2
   , MapMerge dimPot dimLenNeg2 dimZhz
+  , MapMerge dimDen  '[ '(Time, NTwo), '(Length, PThree), '(Mass, NOne) ] dimZhz
 
   , MapMerge uniLen uniLen  uniLen2
   , MapNeg uniLen2  uniLenNeg2
   , MapMerge  uniPot uniLenNeg2 uniZhz
+  , MapMerge uniDen   '[ '(Second, NTwo), '(Meter, PThree), '((Kilo Gram), NOne) ] uniZhz'
 
   , Convertible' dimLen uniLen
   , Convertible' dimPot uniPot
+  , Convertible' dimDen uniDen
   , Convertible' dimZhz uniZhz
-
---   , Convertible' dimLen2 uniLen2
---   , Convertible' dimLenNeg2 uniLenNeg2
+  , Convertible' dimZhz uniZhz'
 
    ) =>
  (forall s. AD.Mode s => 
@@ -77,7 +72,7 @@ gravityPoisson ::
 
 gravityPoisson gravitationalPotential density r
   = laplacian gravitationalPotential r 
-    |-|    (4 *| pi |*| density r)
+    |-|    (4 *| pi |*| density r |*| g)
 
 -- gravityPoisson gravitationalPotential density r
 --  = laplacian gravitationalPotential r 
