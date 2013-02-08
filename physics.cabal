@@ -35,7 +35,7 @@ library
                      Physics.Dimension
                      Physics.NewtonMechanics.Concepts
 
-                     Test.Hspec.Expectations.Quantitative
+                     Test.Hspec.Expectations.UnitTyped
 
                      Text.CSL.Output.Haddock
 
@@ -52,7 +52,7 @@ library
                      , unittyped >= 0.3
   ghc-options:    -O3 -Wall -fno-warn-type-defaults
 
-Test-Suite doctest
+Test-Suite doctests
   Type:                 exitcode-stdio-1.0
   HS-Source-Dirs:       test
   Ghc-Options:          -threaded -Wall
