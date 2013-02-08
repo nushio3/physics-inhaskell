@@ -28,12 +28,14 @@ library
   exposed-modules:   
                      Astrophysics.ProtoplanetaryDisk.Model
 
+                     Numeric.Physical.VectorCalculus
+
                      Physics.Constants
                      Physics.ContinuumMechanics.Equations
                      Physics.Dimension
                      Physics.NewtonMechanics.Concepts
 
-                     Numeric.Physical.VectorCalculus
+                     Test.Hspec.Expectations.Quantitative
 
                      Text.CSL.Output.Haddock
 
@@ -45,6 +47,7 @@ library
                      , citation-resolve >= 0.2.3
                      , dynamic-object >= 0.2.1
                      , embeddock >= 0.3
+                     , HUnit >= 1.2
                      , typelevel-tensor >= 0.2
                      , unittyped >= 0.3
   ghc-options:    -O3 -Wall -fno-warn-type-defaults
