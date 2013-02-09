@@ -9,8 +9,8 @@ import Test.HUnit.Lang (Assertion, assertFailure)
 isOfOrderOf :: (Ord f, Show f, Fractional f,Convertible' a b, Convertible' c d, MapEq c a) => 
   Value a b f -> Value c d f -> Assertion
 isOfOrderOf x y 
-  | x' |<| 10 *| y' && x' |>| 0.1 *| y' = return ()
-  | otherwise                           = assertFailure $
+  | x' |<| 3.1622776601683795 *| y' && x' |>| 0.31622776601683795 *| y' = return ()
+  | otherwise = assertFailure $
     "expected " ++ show x ++ " to be of order of " ++ show y 
                 ++ ", but it isn't."
   where
