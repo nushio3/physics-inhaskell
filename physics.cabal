@@ -50,7 +50,7 @@ library
                      , HUnit >= 1.2
                      , typelevel-tensor >= 0.2.1
                      , unittyped >= 0.3
-  ghc-options:    -O3 -Wall -fno-warn-type-defaults
+  ghc-options:    -O3 -Wall -fno-warn-type-defaults 
 
 Test-Suite doctests
   Type:                 exitcode-stdio-1.0
@@ -64,9 +64,10 @@ Test-Suite doctests
 
 Test-Suite spec
   Type:                 exitcode-stdio-1.0
-  Ghc-Options:          -Wall
+  Ghc-Options:          -Wall -L/usr/lib/ -lpthread
   HS-Source-Dirs:       test
   Main-Is:              spec.hs
+
   Build-Depends:        base
                       , physics
 

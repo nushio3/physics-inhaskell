@@ -8,22 +8,25 @@ import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPot
 import Data.Foldable (foldl1)
 import Data.Tensor.TypeLevel (vec3, Vec3)
 
-import Physics.ContinuumMechanics.Equations (gravityPoisson)
+import           Numeric.Physical.VectorCalculus (grad)
+
+import Physics.ContinuumMechanics.Equations (gravityPoisson, hydrostatic)
 
 import Prelude hiding (sqrt, foldl1)
 
 import Test.Hspec
 import Test.Hspec.QuickCheck (prop)
 import Test.Hspec.Expectations.UnitTyped (isOfOrderOf)
+import Test.QuickCheck ((==>))
 
 import           Text.CSL.Output.Haddock (citet, citep, citeUrl)
 
 import UnitTyped (
-       Value(..), NOne, POne, NTwo, PTwo, NThree, 
-       to, per,(|+|), (*|), (|*|), (|/|), (|>=|),(|<=|),square, (:|), mkVal )
+       Value(..), NOne, POne, NTwo, PTwo, NThree, U,
+       to, per,(|+|), (*|), (|*|), (|/|), (|>=|),(|<=|),(|>|), square, (:|), mkVal )
 import UnitTyped.SI (Gram, Meter, Length, Second, Time, gram, kelvin, meter, second)
 import UnitTyped.SI.Constants (kB, m_p)
-import UnitTyped.SI.Derived (Speed, Density)
+import UnitTyped.SI.Derived (Speed, Density, Pressure, Pascal,Acceleration, pascal)
 import UnitTyped.SI.Derived.Length (astronomicalUnit, lightYear, parsec, AstronomicalUnit)
 import           UnitTyped.SI.Meta (Kilo)             
 import UnitTyped.NoPrelude (sqrt)
@@ -41,7 +44,26 @@ spec = describe ("Bonner Ebert Sphere " ++  citet bonnor1956) $ do
             pot = bonnerEbertPotential soundSpeed . xyzToR
             den :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
             den = bonnerEbertDensity soundSpeed . xyzToR
-        in gravityPoisson pot den xyz |<=| (mkVal 1 :: Value  '[ '(Time, NTwo)]  '[ '(Second, NTwo)]Double)
+        in 
+          xyzToR xyz |>| (0 *| meter)  ==> 
+          gravityPoisson pot den xyz |<=| (mkVal 1e-3 :: Value  '[ '(Time, NTwo)]  '[ '(Second, NTwo)]Double)
+
+  prop "is hydrostatic" $ 
+     \xyz -> 
+        let pre :: Floating f => Vec3 (f :| Meter) -> Value Pressure (U Pascal) f 
+            pre = (to pascal) .(|*| square soundSpeed) . bonnerEbertDensity soundSpeed . xyzToR
+            acc :: Floating f => Vec3 (f :| Meter) -> 
+                Vec3 (Value Acceleration  '[ '(Second, NTwo), '(Meter, POne)] f )
+            acc = (fmap $ to (meter `per` square second)) . grad (bonnerEbertPotential soundSpeed . xyzToR)
+            den :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
+            den = bonnerEbertDensity soundSpeed . xyzToR
+            epsilon :: Value Acceleration '[ '(Second, NTwo), '(Meter, POne) ] Double
+            epsilon = mkVal 1e-3
+
+            h = hydrostatic pre den acc xyz
+        in 
+          xyzToR xyz |>| (0 *| meter)  ==> 
+             epsilon  |<=| epsilon
 
 
 

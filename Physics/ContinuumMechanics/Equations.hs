@@ -70,7 +70,7 @@ gravityPoisson gravitationalPotential density r
 
 hydrostatic ::
   forall x
-  dimLen dimPre dimDen dimAcc dimGpr dimNegLen dimNegDen
+  dimLen dimPre dimDen dimAcc dimGpr dimNegLen dimNegDen dimAcc'
   uniLen uniPre uniDen uniAcc uniGpr uniNegLen uniNegDen uniAcc'
   .
   ( Fractional x
@@ -86,13 +86,14 @@ hydrostatic ::
   , Convertible' dimGpr uniGpr
   , Convertible' dimDen uniDen
   , Convertible' dimAcc uniAcc
-  , Convertible' dimAcc uniAcc'
+  , Convertible' dimAcc' uniAcc'
 
   , MapNeg   dimLen dimNegLen
   , MapMerge dimPre dimNegLen dimGpr
   , MapNeg   dimDen dimNegDen
-  , MapMerge dimGpr dimNegDen dimAcc
+  , MapMerge dimGpr dimNegDen dimAcc'
 
+  , MapEq dimAcc' dimAcc
 
   , MapNeg   uniLen uniNegLen
   , MapMerge uniPre uniNegLen uniGpr
@@ -111,7 +112,8 @@ hydrostatic ::
   -> (Vec3 (Value dimLen uniLen x) ->  Vec3 (Value dimAcc uniAcc x))
 
 hydrostatic pressure density externalAcc r
-  = compose $ \i -> (externalAcc r ! i) |+| (gradP r ! i) |/| (density r)
+  = compose $ \i -> to (undefined :: Value dimAcc uniAcc x) $
+    (externalAcc r ! i) |+| (gradP r ! i) |/| (density r)
 
   where
     gradP :: Vec3 (Value dimLen uniLen x) -> Vec3 (Value dimGpr uniGpr x)
