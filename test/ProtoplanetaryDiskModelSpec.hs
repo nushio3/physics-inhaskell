@@ -3,7 +3,7 @@
 
 module ProtoplanetaryDiskModelSpec (spec) where
 
-import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPotential, bonnor1956)
+import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPotential, bonnor1956, ebert1955)
 
 import Data.Foldable (foldl1)
 import Data.Tensor.TypeLevel (vec3, Vec3)
@@ -33,12 +33,12 @@ import UnitTyped.NoPrelude (sqrt)
 
 
 spec :: Spec
-spec = describe ("Bonner Ebert Sphere " ++  citet bonnor1956) $ do
+spec = describe ("Bonner Ebert Sphere by " ++  citet bonnor1956  ++ " & " ++ citet ebert1955) $ do
   it "temperature is 10K" $ do
      soundSpeed `isOfOrderOf` (100 *| meter |/| second)
   prop "radius is positive" $ 
      \xyz ->  xyzToR xyz |>=| (0::Double) *| astronomicalUnit
-  prop "gravity is solved" $ 
+  prop "has correct gravitational potential" $ 
      \xyz -> 
         let pot :: Floating f => Vec3 (f :| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)]  '[ '(Second, NTwo), '(Meter, PTwo)] f 
             pot = bonnerEbertPotential soundSpeed . xyzToR
