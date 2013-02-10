@@ -1,28 +1,47 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeOperators #-}
 
 module ProtoplanetaryDiskModelSpec (spec) where
 
-import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPotential)
+import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPotential, bonnor1956)
 
-import Prelude hiding (sqrt)
+import Data.Foldable (foldl1)
+import Data.Tensor.TypeLevel (vec3, Vec3)
+
+import Physics.ContinuumMechanics.Equations (gravityPoisson)
+
+import Prelude hiding (sqrt, foldl1)
 
 import Test.Hspec
 import Test.Hspec.QuickCheck (prop)
 import Test.Hspec.Expectations.UnitTyped (isOfOrderOf)
 
-import UnitTyped (Value(..), NOne, POne, to, per, (*|), (|*|), (|/|), square )
-import UnitTyped.SI (Meter, Second, gram, kelvin, meter, second)
+import           Text.CSL.Output.Haddock (citet, citep, citeUrl)
+
+import UnitTyped (
+       Value(..), NOne, POne, NTwo, PTwo, NThree, 
+       to, per,(|+|), (*|), (|*|), (|/|), (|>=|),(|<=|),square, (:|), mkVal )
+import UnitTyped.SI (Gram, Meter, Length, Second, Time, gram, kelvin, meter, second)
 import UnitTyped.SI.Constants (kB, m_p)
-import UnitTyped.SI.Derived (Speed)
-import UnitTyped.SI.Derived.Length (astronomicalUnit, lightYear, parsec)
+import UnitTyped.SI.Derived (Speed, Density)
+import UnitTyped.SI.Derived.Length (astronomicalUnit, lightYear, parsec, AstronomicalUnit)
+import           UnitTyped.SI.Meta (Kilo)             
 import UnitTyped.NoPrelude (sqrt)
 
 
 spec :: Spec
-spec = describe "Bonner Ebert Sphere" $ do
+spec = describe ("Bonner Ebert Sphere " ++  citet bonnor1956) $ do
   it "temperature is 10K" $ do
      soundSpeed `isOfOrderOf` (100 *| meter |/| second)
-
+  prop "radius is positive" $ 
+     \xyz ->  xyzToR xyz |>=| (0::Double) *| astronomicalUnit
+  prop "gravity is solved" $ 
+     \xyz -> 
+        let pot :: Floating f => Vec3 (f :| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)]  '[ '(Second, NTwo), '(Meter, PTwo)] f 
+            pot = bonnerEbertPotential soundSpeed . xyzToR
+            den :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
+            den = bonnerEbertDensity soundSpeed . xyzToR
+        in gravityPoisson pot den xyz |<=| (mkVal 1 :: Value  '[ '(Time, NTwo)]  '[ '(Second, NTwo)]Double)
 
 
 
@@ -32,3 +51,6 @@ soundSpeed =
   sqrt $
   to (square meter `per` square second) $ (1.4 *| kB |*| (10 *| kelvin) ) |/| (2 *| m_p)
 
+xyzToR :: Floating f => Vec3 (f :| Meter) -> (f :| Meter) 
+xyzToR xyz = 
+  sqrt $ foldl1 (|+|) $ fmap square xyz
