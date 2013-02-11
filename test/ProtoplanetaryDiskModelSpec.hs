@@ -10,27 +10,39 @@ import Data.Tensor.TypeLevel (vec3, Vec3)
 
 import           Numeric.Physical.VectorCalculus (grad)
 
-import Physics.ContinuumMechanics.Equations (gravityPoisson, hydrostatic)
+import Physics.ContinuumMechanics.Equations 
 
-import Prelude hiding (sqrt, foldl1)
+import Prelude hiding (abs, sqrt, foldl1)
+
+import System.IO
+import System.IO.Unsafe (unsafePerformIO)
+
 
 import Test.Hspec
 import Test.Hspec.QuickCheck (prop)
 import Test.Hspec.Expectations.UnitTyped (isOfOrderOf)
-import Test.QuickCheck ((==>))
+import Test.HUnit.Lang (Assertion, performTestCase)
+import Test.QuickCheck ((==>), Arbitrary, Property)
+import Test.QuickCheck.Property (morallyDubiousIOProperty)
 
 import           Text.CSL.Output.Haddock (citet, citep, citeUrl)
 
 import UnitTyped (
        Value(..), NOne, POne, NTwo, PTwo, NThree, U,
-       to, per,(|+|), (*|), (|*|), (|/|), (|>=|),(|<=|),(|>|), square, (:|), mkVal )
+       to, per,(|+|), (|-|), (*|), (|*|), (|/|), (|>=|),(|<=|),(|>|),(|==|), square, (:|), mkVal )
 import UnitTyped.SI (Gram, Meter, Length, Second, Time, gram, kelvin, meter, second)
 import UnitTyped.SI.Constants (kB, m_p)
 import UnitTyped.SI.Derived (Speed, Density, Pressure, Pascal,Acceleration, pascal)
 import UnitTyped.SI.Derived.Length (astronomicalUnit, lightYear, parsec, AstronomicalUnit)
 import           UnitTyped.SI.Meta (Kilo)             
-import UnitTyped.NoPrelude (sqrt)
+import UnitTyped.NoPrelude (abs, sqrt)
 
+
+execAss :: Assertion -> Property
+execAss ass = morallyDubiousIOProperty $ (fmap (==Nothing)) $ performTestCase ass
+
+printe :: Show a => a -> IO ()
+printe = hPutStrLn stderr . show
 
 spec :: Spec
 spec = describe ("Bonner Ebert Sphere by " ++  citet bonnor1956  ++ " & " ++ citet ebert1955) $ do
@@ -38,15 +50,16 @@ spec = describe ("Bonner Ebert Sphere by " ++  citet bonnor1956  ++ " & " ++ cit
      soundSpeed `isOfOrderOf` (100 *| meter |/| second)
   prop "radius is positive" $ 
      \xyz ->  xyzToR xyz |>=| (0::Double) *| astronomicalUnit
-  prop "has correct gravitational potential" $ 
+
+  prop "has correct gravitational potential 2" $
      \xyz -> 
-        let pot :: Floating f => Vec3 (f :| Meter) -> Value  '[ '(Time, NTwo), '(Length, PTwo)]  '[ '(Second, NTwo), '(Meter, PTwo)] f 
-            pot = bonnerEbertPotential soundSpeed . xyzToR
-            den :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
+        let 
+            den' :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
+            den' = gravitationalPotentialToDensity (bonnerEbertPotential soundSpeed . xyzToR)
             den = bonnerEbertDensity soundSpeed . xyzToR
-        in 
+        in
           xyzToR xyz |>| (0 *| meter)  ==> 
-          gravityPoisson pot den xyz |<=| (mkVal 1e-3 :: Value  '[ '(Time, NTwo)]  '[ '(Second, NTwo)]Double)
+            abs(den' xyz |-| den xyz)  |<=| 1e-10 *| den xyz
 
   prop "is hydrostatic" $ 
      \xyz -> 
@@ -64,7 +77,7 @@ spec = describe ("Bonner Ebert Sphere by " ++  citet bonnor1956  ++ " & " ++ cit
         in 
           xyzToR xyz |>| (0 *| meter)  ==> 
              epsilon  |<=| epsilon
-
+                
 
 
 

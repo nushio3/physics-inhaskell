@@ -18,11 +18,13 @@ idaLin2003, ida2007
 
 ) where
 
+import           Prelude hiding (pi)
 import           System.IO.Unsafe(unsafePerformIO)
 import           Text.CSL.Input.Identifier (readID, EReference)
 import           Text.CSL.Output.Haddock (citet, citep, citeUrl)
 import           UnitTyped
   (Value(..), (|/|), (|*|), (*|), as, square, val)
+
 import           UnitTyped.Type
   (Convertible', MapInsert', MapMerge, MapStrip, MapNeg, MapEq, Nat(..), Number(..))
 import qualified UnitTyped.Type as UT
@@ -32,7 +34,7 @@ import           UnitTyped.Type
                    Convertible'(..), MapMerge, MapNeg, MapEq, POne, PTwo, PThree,NOne, NTwo, NThree)
 
 import           UnitTyped.SI (LengthDimension, Length, Mass, Time, Second, Meter, Gram)
-import           UnitTyped.SI.Constants (g)
+import           UnitTyped.SI.Constants (g, pi)
 import           UnitTyped.SI.Derived (Speed, Density)
 
 {- It is hard to type this, it's so long.... You can type this by
@@ -58,7 +60,7 @@ bonnerEbertDensity ::
   , uniLen ~ '[ '(Meter, POne)]
 
  ) => Value dimSpd uniSpd f -> Value dimLen uniLen f -> Value dimDen uniDen f
-bonnerEbertDensity cs r = square cs |/| (g |*| square r)
+bonnerEbertDensity cs r = square cs |/| (2 *| pi |*| g |*| square r)
 
 
 bonnerEbertPotential :: 
