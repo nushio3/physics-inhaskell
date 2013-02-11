@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
 module ProtoplanetaryDiskModelSpec (spec) where
@@ -6,7 +7,7 @@ module ProtoplanetaryDiskModelSpec (spec) where
 import Astrophysics.ProtoplanetaryDisk.Model (bonnerEbertDensity, bonnerEbertPotential, bonnor1956, ebert1955)
 
 import Data.Foldable (foldl1)
-import Data.Tensor.TypeLevel (vec3, Vec3)
+import Data.Tensor.TypeLevel (vec3, Vec3, compose, (!))
 
 import           Numeric.Physical.VectorCalculus (grad)
 
@@ -65,19 +66,30 @@ spec = describe ("Bonner Ebert Sphere by " ++  citet bonnor1956  ++ " & " ++ cit
      \xyz -> 
         let pre :: Floating f => Vec3 (f :| Meter) -> Value Pressure (U Pascal) f 
             pre = (to pascal) .(|*| square soundSpeed) . bonnerEbertDensity soundSpeed . xyzToR
-            acc :: Floating f => Vec3 (f :| Meter) -> 
-                Vec3 (Value Acceleration  '[ '(Second, NTwo), '(Meter, POne)] f )
-            acc = (fmap $ to (meter `per` square second)) . grad (bonnerEbertPotential soundSpeed . xyzToR)
             den :: Vec3 (Double :| Meter) -> Value Density '[ '(Meter, NThree), '(Kilo Gram, POne)] Double
             den = bonnerEbertDensity soundSpeed . xyzToR
-            epsilon :: Value Acceleration '[ '(Second, NTwo), '(Meter, POne) ] Double
-            epsilon = mkVal 1e-3
 
-            h = hydrostatic pre den acc xyz
+            acc :: (f ~ Double) => Vec3 (f :| Meter) -> 
+                Vec3 (Value Acceleration  '[ '(Second, NTwo), '(Meter, POne)] f )
+            acc = (fmap $ to (meter `per` square second)) . pressureToAcc pre den
+
+            acc' :: (f ~ Double) => Vec3 (f :| Meter) -> 
+                Vec3 (Value Acceleration  '[ '(Second, NTwo), '(Meter, POne)] f )
+            acc' = (fmap $ to (meter `per` square second)) . grad (bonnerEbertPotential soundSpeed . xyzToR)
+
         in 
           xyzToR xyz |>| (0 *| meter)  ==> 
-             epsilon  |<=| epsilon
-                
+---            unsafePerformIO ( do
+---                 printe xyz                            
+---                 printe $ acc' xyz
+---                 printe $ acc xyz
+---                 
+---                 return $)
+                    foldl1 (|+|) (compose $ \i ->  abs ((acc xyz ! i) |+| (acc' xyz ! i)))
+                    |<=|
+                    foldl1 (|+|) (compose $ \i -> 1e-10*| abs (acc xyz ! i))
+                             
+
 
 
 
